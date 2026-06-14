@@ -24,7 +24,7 @@ This is not a people problem. It is a **systems problem**. And it has a systems 
 
 Think of it as a briefing document for AI. Before a new employee starts, you brief them: what stack you use, how incidents are handled, what's failed before. SRE AI Agent is that briefing — but for an AI that never forgets, never goes on vacation, and is available at 3am.
 
-Any team can get started in minutes — either by forking this repo or using the `sre-agent` CLI (coming soon) — and immediately have an AI that understands how *their* systems work. Not generic SRE advice, but knowledge built from their own incidents, their own stack, their own team.
+Any team can get started in minutes — and immediately have an AI that understands how *their* systems work. Not generic SRE advice, but knowledge built from their own incidents, their own stack, their own team.
 
 **The more incidents it sees, the smarter it gets.** Every resolved incident feeds the knowledge base. MTTR shrinks. Junior SREs handle incidents that used to require a senior. New hires are productive in days, not months.
 
@@ -100,7 +100,7 @@ Compare that to a cold-start with no context: 47 minutes of trial and error, hal
 
 ## Skills
 
-19 skills covering the full SRE SDLC:
+20 skills covering the full SRE SDLC:
 
 ```
 DESIGN         DEPLOY            OPERATE              IMPROVE
@@ -153,6 +153,23 @@ The agent adapts its output based on your role:
 ---
 
 ## Quick Start
+
+### Option A — CLI (recommended)
+
+```bash
+pip install git+https://github.com/stevancris/sre-ai-agent.git
+sre-agent init
+```
+
+The setup wizard will ask about your role, cloud provider, observability stack, and team — then scaffold a pre-configured agent directory in under 2 minutes.
+
+Or install via npx (no Python required):
+
+```bash
+npx skills add stevancris/sre-ai-agent
+```
+
+### Option B — Manual setup
 
 **1. Prerequisites**
 

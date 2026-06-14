@@ -233,6 +233,7 @@ Bash(terraform plan:*) Bash(terraform validate:*)
 | `root-cause-analysis` | Deep five-whys and contributing factor analysis |
 | `toil-tracking` | Measure and reduce repetitive manual work |
 | `chaos-engineering` | Resilience validation, gameday exercises |
+| `import-rca` | Convert existing RCA bank into knowledge-base patterns |
 
 ### Cross-Cutting
 | Skill | When to use |

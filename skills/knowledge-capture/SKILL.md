@@ -229,3 +229,10 @@ The knowledge stays even when the SRE who discovered it leaves.
 - Do not wait for the postmortem to capture knowledge. Do it while the incident is fresh.
   The postmortem is the formal document; this is the operational knowledge.
 - A 5-minute knowledge capture prevents a 47-minute incident next time.
+
+## Importing Historical RCAs
+
+This skill captures knowledge from incidents that just happened. If your team has an
+existing bank of RCAs written before the agent was set up, use the `import-rca` skill
+instead — it accepts any RCA format (Google SRE, Atlassian, PagerDuty, Confluence, or
+free-form) and converts them into knowledge-base patterns in bulk.
