@@ -4,6 +4,7 @@ from sre_agent.commands.init import init
 from sre_agent.commands.search import search
 from sre_agent.commands.incident import incident
 from sre_agent.commands.validate import validate
+from sre_agent.commands.import_rca import import_rca
 
 
 @click.group()
@@ -18,6 +19,7 @@ def cli():
       sre-agent search QUERY    Search the knowledge base
       sre-agent incident        Scaffold a new incident
       sre-agent validate        Validate all SKILL.md files
+      sre-agent import-rca      Convert RCA documents into knowledge-base patterns
     """
 
 
@@ -25,3 +27,4 @@ cli.add_command(init)
 cli.add_command(search)
 cli.add_command(incident)
 cli.add_command(validate)
+cli.add_command(import_rca)
