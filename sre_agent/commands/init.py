@@ -61,6 +61,30 @@ def ask_choice(prompt: str, hint: str, choices: list[str], default: str | None =
         click.echo(f"  {YELLOW}Please choose one of: {', '.join(choices)}{RESET}")
 
 
+def ask_multi(prompt: str, hint: str, choices: list[str], default: str | None = None) -> str:
+    """Like ask_choice but accepts comma-separated values for multiple selections."""
+    choices_lower = [c.lower() for c in choices]
+    click.echo(f"\n  {WHITE}{prompt}{RESET}")
+    click.echo(f"  {DIM}{hint}{RESET}")
+    click.echo(f"  Options: {', '.join(choices)}")
+    click.echo(f"  {DIM}You can pick multiple, e.g.: argocd, github-actions{RESET}")
+    while True:
+        val = click.prompt(
+            f"  {CYAN}>{RESET}",
+            default=default or "",
+            show_default=bool(default),
+            prompt_suffix=" ",
+        ).strip().lower()
+        parts = [p.strip() for p in val.split(",") if p.strip()]
+        invalid = [p for p in parts if p not in choices_lower]
+        if parts and not invalid:
+            return ", ".join(parts)
+        if invalid:
+            click.echo(f"  {YELLOW}Unknown: {', '.join(invalid)}. Choose from: {', '.join(choices)}{RESET}")
+        else:
+            click.echo(f"  {YELLOW}Please enter at least one option.{RESET}")
+
+
 def ask_text(prompt: str, hint: str, default: str | None = None) -> str:
     click.echo(f"\n  {WHITE}{prompt}{RESET}")
     click.echo(f"  {DIM}{hint}{RESET}")
@@ -103,18 +127,20 @@ def gather_context() -> dict:
         "  to your specific environment.",
         ["aws", "gcp", "azure", "on-prem", "hybrid"],
     )
-    deploy = ask_choice(
-        "What is your primary deployment tool?",
-        "Used in deployment safety checks and rollback guidance.",
+    deploy = ask_multi(
+        "What deployment tools does your team use?",
+        "Used in deployment safety checks and rollback guidance.\n"
+        "  Most teams use more than one — list all that apply.",
         ["argocd", "flux", "github-actions", "gitlab-ci", "jenkins", "spinnaker", "other"],
     )
 
     # Step 4 — Observability
     step_header(4, STEPS[3])
-    obs = ask_choice(
-        "What observability stack do you use?",
+    obs = ask_multi(
+        "What observability tools does your team use?",
         "The agent references your tools when suggesting dashboards,\n"
-        "  alert queries, and metric checks during incidents.",
+        "  alert queries, and metric checks during incidents.\n"
+        "  Many teams combine multiple tools — list all that apply.",
         ["datadog", "prometheus+grafana", "new-relic", "cloudwatch", "dynatrace", "other"],
     )
 
