@@ -168,7 +168,7 @@ _Best hypothesis at this point._
 
 ---
 
-> After resolution, run: `python scripts/knowledge_search.py "{service}"` to see if this matches a known pattern.
+> After resolution, run: `sre-agent search "{service}"` to see if this matches a known pattern.
 > Then open Claude Code and run the `knowledge-capture` skill to save what was learned.
 """
 
@@ -199,7 +199,7 @@ def print_summary(
         print(f"\n{ANSI_BOLD}{ANSI_YELLOW}⚡ Known patterns found for '{service}':{ANSI_RESET}")
         for p in related:
             print(f"  → {p.name}")
-        print(f"\n  Run: {ANSI_CYAN}python scripts/knowledge_search.py \"{service}\"{ANSI_RESET}")
+        print(f"\n  Run: {ANSI_CYAN}sre-agent search \"{service}\"{ANSI_RESET}")
     else:
         print(f"\n{ANSI_DIM}No known patterns for '{service}' — first occurrence?{ANSI_RESET}")
         print(f"{ANSI_DIM}Run knowledge-capture after resolution.{ANSI_RESET}")
@@ -212,6 +212,12 @@ def print_summary(
 
 
 def main() -> None:
+    if not (Path.cwd() / "context" / "CONTEXT.md").exists():
+        print(f"{ANSI_RED}Error: No sre-agent directory found here.{ANSI_RESET}")
+        print(f"{ANSI_DIM}Run this command from inside your sre-agent directory.")
+        print(f"If you haven't set one up yet: sre-agent init{ANSI_RESET}")
+        sys.exit(1)
+
     parser = argparse.ArgumentParser(
         description="Scaffold a new incident",
         formatter_class=argparse.RawDescriptionHelpFormatter,

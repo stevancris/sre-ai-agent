@@ -1,5 +1,6 @@
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 import click
 from sre_agent.core.incident import (
     generate_channel_name, create_timeline,
@@ -20,6 +21,12 @@ def incident(service: str, severity: str, symptom: str) -> None:
       sre-agent incident payment-api P1
       sre-agent incident auth-service P0 --symptom "all logins failing"
     """
+    if not (Path.cwd() / "context" / "CONTEXT.md").exists():
+        click.echo("Error: No sre-agent directory found here.", err=True)
+        click.echo("Run this command from inside your sre-agent directory.", err=True)
+        click.echo("If you haven't set one up yet: sre-agent init", err=True)
+        sys.exit(1)
+
     severity = severity.upper()
     now = datetime.now(timezone.utc)
     channel = generate_channel_name(service, severity, now)

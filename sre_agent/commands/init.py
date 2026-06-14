@@ -227,6 +227,7 @@ cloud_provider: {ctx['cloud']}
 observability_stack: {ctx['observability']}
 deployment_tool: {ctx['deploy']}
 team_size: {ctx['team_size']}
+slack_channel: {ctx['slack_channel']}
 situation: learning
 
 # Next: fill in these files to complete your setup
