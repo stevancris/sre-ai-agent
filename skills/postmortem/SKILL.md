@@ -105,6 +105,20 @@ Recommend the distribution list based on severity:
 - P1: engineering team, engineering manager, customer success
 - P2/P3: SRE team and service owners
 
+### Step 8: Close the Knowledge Loop (MANDATORY)
+After the postmortem is written and distributed, always prompt:
+
+> "Postmortem complete. Before we close — run `knowledge-capture` to save this as a
+> searchable pattern. Next time this happens, any SRE on the team can resolve it faster."
+
+This step converts the postmortem (written for humans, looking backward) into a
+knowledge-base pattern (written for the agent, looking forward). The two documents
+serve different purposes and both are needed.
+
+If the user already ran `knowledge-capture` during the incident, confirm the pattern
+exists in `skills/knowledge-base/patterns/` and prompt them to enrich it with any
+additional detail from the postmortem (dead ends, prevention action items, MTTR).
+
 ---
 
 ## Examples

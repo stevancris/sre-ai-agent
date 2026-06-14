@@ -77,6 +77,19 @@ factors, Resolution summary, Follow-up tasks.
 **Elastic / cloud provider format** — has: Incident title, Date/time, Duration, Impact,
 Summary, Root cause, Remediation, Prevention measures.
 
+**Elastic / cloud provider format** — has: Incident title, Date/time, Duration, Impact,
+Summary, Root cause, Remediation, Prevention measures.
+
+**SRE AI Agent postmortem format** — output from this agent's own `postmortem` skill.
+Has sections: Summary, Impact, Root Causes, Trigger, Timeline, Lessons Learned
+(went well / wrong / lucky), Action Items, Distribution. Map as follows:
+- "Root Causes + Trigger" → `## Symptom Signature` + `## Trigger Conditions`
+- "Timeline" → `## Fastest Diagnostic Path` (rewrite as forward-looking steps)
+- "What went wrong + Lessons Learned" → `## Dead Ends — Do Not Try These`
+- "Resolution" → `## Resolution`
+- "Action Items" → `## Prevention`
+- "What went well + lucky" → `## Notes`
+
 **Custom / free-form** — any internal template. Extract by intent, not by heading name.
 
 ---
