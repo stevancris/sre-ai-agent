@@ -20,11 +20,17 @@ This is not a people problem. It is a **systems problem**. And it has a systems 
 
 ## What This Is
 
-**SRE AI Agent** is a structured knowledge system for SRE teams, built on the [Agent Skills specification](https://agentskills.io/specification) and designed to run with [Claude Code](https://claude.ai/code).
+**SRE AI Agent** is your company's institutional memory — built on the [Agent Skills specification](https://agentskills.io/specification) and designed to run with [Claude Code](https://claude.ai/code).
 
-It gives an AI agent deep SRE expertise across the full operational lifecycle — and critically, it **learns from every incident your team handles**, accumulating company-specific knowledge that makes every future incident faster to resolve, regardless of who is on call.
+Think of it as a briefing document for AI. Before a new employee starts, you brief them: what stack you use, how incidents are handled, what's failed before. SRE AI Agent is that briefing — but for an AI that never forgets, never goes on vacation, and is available at 3am.
 
-The more you use it, the more it knows about *your* systems, *your* failure modes, and *your* company's specific behavior. Not generic SRE advice — knowledge built from your own incidents.
+Any team can get started in minutes — either by forking this repo or using the `sre-agent` CLI (coming soon) — and immediately have an AI that understands how *their* systems work. Not generic SRE advice, but knowledge built from their own incidents, their own stack, their own team.
+
+**The more incidents it sees, the smarter it gets.** Every resolved incident feeds the knowledge base. MTTR shrinks. Junior SREs handle incidents that used to require a senior. New hires are productive in days, not months.
+
+### Why not just use incident.io or PagerDuty?
+
+Those are great tools — but they're SaaS. Your incident data lives on their servers, not yours. SRE AI Agent is local-first: the knowledge base is a folder in your repo, version-controlled, auditable, and never leaves your infrastructure.
 
 ---
 
@@ -178,6 +184,8 @@ claude
 
 That's it. The agent reads `CLAUDE.md` automatically and loads your context.
 
+> **New to Claude Code?** It's a terminal-based AI coding assistant from Anthropic. Install it with `npm install -g @anthropic-ai/claude-code`, then run `claude` in any project directory. [Get started here](https://claude.ai/code).
+
 **5. Try it:**
 
 ```
@@ -186,6 +194,79 @@ That's it. The agent reads `CLAUDE.md` automatically and loads your context.
 "Is this Terraform plan safe to apply?"
 "My team spends half our time on manual work — help me measure it"
 ```
+
+---
+
+## Team Setup — Shared Knowledge Base
+
+The real power of SRE AI Agent comes when the entire team shares one knowledge base. Every incident one SRE resolves makes it faster for everyone else to resolve the next one.
+
+### How It Works
+
+```
+Incident resolved
+  → SRE runs knowledge-capture
+  → agent generates a new pattern file in knowledge-base/patterns/
+  → SRE opens a PR to the shared private repo
+  → one teammate reviews and approves
+  → merge → everyone pulls → knowledge is synced across the team
+```
+
+### Setup Steps
+
+**1. Create a private repo for your team**
+
+Fork this repo into a private repository inside your company's Git organization. This is where your team's knowledge will live — keep it private.
+
+**2. Each SRE clones the shared repo**
+
+```bash
+git clone git@github.com:<your-org>/sre-ai-agent.git
+cd sre-ai-agent
+```
+
+**3. Fill in company context once — together**
+
+One person fills in the context files, commits, and pushes. Everyone else pulls.
+
+```bash
+# After filling in context/CONTEXT.md and context/company/*
+git add context/
+git commit -m "feat: add company context"
+git push
+```
+
+**4. After every incident — open a PR**
+
+When `knowledge-capture` generates a new pattern file:
+
+```bash
+git checkout -b knowledge/payment-api-timeout
+git add skills/knowledge-base/patterns/
+git commit -m "knowledge: payment-api connection timeout pattern"
+git push origin knowledge/payment-api-timeout
+# Open PR → 1 approval → merge
+```
+
+**5. Everyone pulls after merge**
+
+```bash
+git pull
+```
+
+That's it. The knowledge base grows with every incident, and every SRE always has the latest patterns.
+
+### Recommended Branch Convention
+
+```
+knowledge/<service>-<symptom>    # new incident pattern
+context/<what-changed>           # updates to company context
+skill/<skill-name>               # new or updated skill
+```
+
+### Why PR-based?
+
+A quick PR review before merging a pattern means a second SRE reads what happened. This doubles the learning, catches misdiagnoses, and keeps the knowledge base accurate. With low incident frequency, the overhead is minimal.
 
 ---
 

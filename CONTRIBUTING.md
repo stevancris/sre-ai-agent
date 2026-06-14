@@ -28,8 +28,8 @@ Anonymized failure patterns from real incidents. These are the most valuable
 contributions — they encode operational knowledge that usually lives only in
 an engineer's head.
 
-### 4. Translations
-Context files and skill descriptions in languages other than English.
+### 4. Onboarding Examples
+Real-world examples of how teams have set up their company context — sanitized `tech-stack.md`, `oncall-schedule.md`, and knowledge-base patterns that help new adopters get started faster.
 
 ---
 

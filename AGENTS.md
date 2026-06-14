@@ -1,9 +1,11 @@
 # SRE AI Agent
 
-An AI agent with SRE essential skills that adapts its output based on who you are and
-what is happening at your company right now. The agent accumulates knowledge from every
-incident, becoming more familiar with your company's specific behaviour over time — so
-expertise is never locked in one person's head.
+Your company's institutional memory for SRE — a structured knowledge system that adapts
+to your role and stack, accumulates knowledge from every incident, and ensures expertise
+is never locked in one person's head.
+
+Fork this repo, fill in your company context, and immediately have an AI that understands
+how your systems work. The more incidents it sees, the smarter it gets.
 
 ---
 
