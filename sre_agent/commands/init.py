@@ -121,10 +121,11 @@ def gather_context() -> dict:
 
     # Step 3 — Infrastructure
     step_header(3, STEPS[2])
-    cloud = ask_choice(
-        "What cloud provider does your team use?",
+    cloud = ask_multi(
+        "What cloud providers does your team use?",
         "Tailors runbooks, kubectl commands, and cost recommendations\n"
-        "  to your specific environment.",
+        "  to your specific environment.\n"
+        "  Multi-cloud teams can list all, e.g.: aws, gcp",
         ["aws", "gcp", "azure", "on-prem", "hybrid"],
     )
     deploy = ask_multi(
@@ -152,8 +153,9 @@ def gather_context() -> dict:
         default="5",
     )
     slack_channel = ask_text(
-        "What is your primary incident Slack channel?",
-        "Used in incident scaffolding and communication templates.",
+        "What are your incident Slack channels?",
+        "Used in incident scaffolding and communication templates.\n"
+        "  You can list multiple, e.g.: #incidents, #sre-oncall",
         default="#incidents",
     )
 
