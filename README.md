@@ -124,8 +124,8 @@ Accepts any format — our postmortem template, PagerDuty JSON, Atlassian, or pl
 
 The real power comes when the entire team shares one knowledge base.
 
-1. Fork this repo into a **private** repo inside your company's Git org
-2. One person runs `sre-agent init` and commits `context/` — everyone else pulls
+1. One person runs `sre-agent init` → creates a configured directory
+2. Push that directory to a **new private repo** in your company's Git org — everyone else clones it
 3. After every incident, `knowledge-capture` generates a pattern file — open a PR
 4. One teammate reviews, merges — everyone pulls, knowledge is synced
 
