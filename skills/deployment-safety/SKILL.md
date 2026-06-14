@@ -12,6 +12,26 @@ allowed-tools: Read Glob Grep Bash(git log:*) Bash(git diff:*)
 
 # Deployment Safety Skill
 
+## Setup Check
+
+Before loading context files, check if `context/CONTEXT.md` exists in the current directory.
+
+**If `context/CONTEXT.md` exists** — read it and proceed normally.
+
+**If `context/CONTEXT.md` does not exist** — this skill was installed standalone (e.g. via `npx skills add`). Ask the user these questions before proceeding:
+
+1. **Role** — `junior-sre` / `senior-sre` / `sre-manager`
+   *(shapes output depth and tone)*
+2. **Cloud provider** — `aws` / `gcp` / `azure` / `on-prem` / `hybrid`
+3. **Observability stack** — e.g. Datadog, Prometheus+Grafana, New Relic
+4. **Company name and primary services affected** *(if relevant to this task)*
+
+Use the answers inline for this session. For persistent setup across all skills, suggest:
+```
+pipx install sre-agent
+sre-agent init
+```
+
 ## Instructions
 
 ### Step 1: Load Context

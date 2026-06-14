@@ -1,5 +1,4 @@
 import io
-import os
 import re
 import sys
 import zipfile
@@ -11,69 +10,150 @@ import requests
 REPO_ZIP = "https://github.com/stevancris/sre-ai-agent/archive/refs/heads/main.zip"
 REPO_PREFIX = "sre-ai-agent-main/"
 
-CLOUD_PROVIDERS = ["aws", "gcp", "azure", "on-prem", "hybrid"]
-OBS_STACKS = ["datadog", "prometheus+grafana", "new-relic", "cloudwatch", "dynatrace", "other"]
-DEPLOY_TOOLS = ["argocd", "flux", "github-actions", "gitlab-ci", "jenkins", "spinnaker", "other"]
+BOLD  = "\033[1m"
+DIM   = "\033[2m"
+RESET = "\033[0m"
+GREEN = "\033[32m"
+CYAN  = "\033[36m"
+YELLOW = "\033[33m"
+WHITE = "\033[97m"
 
-ANSI_RESET = "\033[0m"
-ANSI_BOLD = "\033[1m"
-ANSI_GREEN = "\033[32m"
-ANSI_CYAN = "\033[36m"
-ANSI_DIM = "\033[2m"
-ANSI_YELLOW = "\033[33m"
+STEPS = [
+    "Company info",
+    "Your role",
+    "Infrastructure",
+    "Observability",
+    "Team setup",
+]
 
 
-def print_banner() -> None:
+def header() -> None:
     click.echo(f"""
-{ANSI_BOLD}┌─────────────────────────────────────────┐
-│         SRE AI Agent — Setup Wizard     │
-└─────────────────────────────────────────┘{ANSI_RESET}
-
-This will scaffold a company-specific SRE agent in a new directory.
-Takes about 2 minutes. Answer a few questions and you're ready to go.
+{BOLD}┌──────────────────────────────────────────────────┐
+│            SRE AI Agent — Setup Wizard           │
+│                                                  │
+│  Sets up your company's institutional memory     │
+│  for SRE in under 2 minutes.                     │
+└──────────────────────────────────────────────────┘{RESET}
 """)
 
 
-def ask(prompt: str, default: str | None = None, choices: list[str] | None = None) -> str:
-    """Prompt with optional default and choice validation."""
-    if choices:
-        click.echo(f"\n  Options: {', '.join(choices)}")
+def step_header(n: int, title: str) -> None:
+    total = len(STEPS)
+    bar = "█" * n + "░" * (total - n)
+    click.echo(f"\n{CYAN}{bar}{RESET}  Step {n}/{total} — {BOLD}{title}{RESET}")
+    click.echo(f"{DIM}{'─' * 52}{RESET}")
+
+
+def ask_choice(prompt: str, hint: str, choices: list[str], default: str | None = None) -> str:
+    click.echo(f"\n  {WHITE}{prompt}{RESET}")
+    click.echo(f"  {DIM}{hint}{RESET}")
+    click.echo(f"  Options: {', '.join(choices)}")
     while True:
-        value = click.prompt(
-            click.style(f"  {prompt}", fg="cyan"),
+        val = click.prompt(
+            f"  {CYAN}>{RESET}",
             default=default or "",
             show_default=bool(default),
+            prompt_suffix=" ",
+        ).strip().lower()
+        if val in [c.lower() for c in choices]:
+            return val
+        click.echo(f"  {YELLOW}Please choose one of: {', '.join(choices)}{RESET}")
+
+
+def ask_text(prompt: str, hint: str, default: str | None = None) -> str:
+    click.echo(f"\n  {WHITE}{prompt}{RESET}")
+    click.echo(f"  {DIM}{hint}{RESET}")
+    while True:
+        val = click.prompt(
+            f"  {CYAN}>{RESET}",
+            default=default or "",
+            show_default=bool(default),
+            prompt_suffix=" ",
         ).strip()
-        if not value:
-            click.echo(f"  {ANSI_YELLOW}This field is required.{ANSI_RESET}")
-            continue
-        if choices and value.lower() not in [c.lower() for c in choices]:
-            click.echo(f"  {ANSI_YELLOW}Choose one of: {', '.join(choices)}{ANSI_RESET}")
-            continue
-        return value.lower() if choices else value
+        if val:
+            return val
+        click.echo(f"  {YELLOW}This field is required.{RESET}")
 
 
 def gather_context() -> dict:
-    click.echo(f"{ANSI_BOLD}Company Context{ANSI_RESET}")
-    click.echo(f"{ANSI_DIM}This information stays in your repo — never leaves your infrastructure.{ANSI_RESET}")
+    # Step 1 — Company info
+    step_header(1, STEPS[0])
+    company = ask_text(
+        "What is your company name?",
+        "Used to name your agent directory and personalize outputs.",
+    )
 
-    company = click.prompt(click.style("  Company name", fg="cyan")).strip()
-    role = ask("Your role", choices=["junior-sre", "senior-sre", "sre-manager"])
-    cloud = ask("Cloud provider", choices=CLOUD_PROVIDERS)
-    obs = ask("Observability stack", choices=OBS_STACKS)
-    deploy = ask("Deployment tool", choices=DEPLOY_TOOLS)
-    team_size = click.prompt(click.style("  Team size (number of SREs)", fg="cyan"), default="5").strip()
-    slack_channel = click.prompt(click.style("  Primary incident Slack channel", fg="cyan"), default="#incidents").strip()
+    # Step 2 — Role
+    step_header(2, STEPS[1])
+    role = ask_choice(
+        "What is your role?",
+        "This shapes how the agent communicates with you.\n"
+        "  junior-sre   → step-by-step guidance, safety nets, escalation reminders\n"
+        "  senior-sre   → concise, trade-offs surfaced, no hand-holding\n"
+        "  sre-manager  → executive summaries, business risk framing",
+        ["junior-sre", "senior-sre", "sre-manager"],
+    )
+
+    # Step 3 — Infrastructure
+    step_header(3, STEPS[2])
+    cloud = ask_choice(
+        "What cloud provider does your team use?",
+        "Tailors runbooks, kubectl commands, and cost recommendations\n"
+        "  to your specific environment.",
+        ["aws", "gcp", "azure", "on-prem", "hybrid"],
+    )
+    deploy = ask_choice(
+        "What is your primary deployment tool?",
+        "Used in deployment safety checks and rollback guidance.",
+        ["argocd", "flux", "github-actions", "gitlab-ci", "jenkins", "spinnaker", "other"],
+    )
+
+    # Step 4 — Observability
+    step_header(4, STEPS[3])
+    obs = ask_choice(
+        "What observability stack do you use?",
+        "The agent references your tools when suggesting dashboards,\n"
+        "  alert queries, and metric checks during incidents.",
+        ["datadog", "prometheus+grafana", "new-relic", "cloudwatch", "dynatrace", "other"],
+    )
+
+    # Step 5 — Team setup
+    step_header(5, STEPS[4])
+    team_size = ask_text(
+        "How many SREs are on your team?",
+        "Helps the agent calibrate escalation paths and on-call load.",
+        default="5",
+    )
+    slack_channel = ask_text(
+        "What is your primary incident Slack channel?",
+        "Used in incident scaffolding and communication templates.",
+        default="#incidents",
+    )
 
     return {
         "company": company,
         "role": role,
         "cloud": cloud,
-        "observability": obs,
         "deploy": deploy,
+        "observability": obs,
         "team_size": team_size,
         "slack_channel": slack_channel,
     }
+
+
+def confirm_summary(ctx: dict, target_name: str) -> bool:
+    click.echo(f"\n{DIM}{'─' * 52}{RESET}")
+    click.echo(f"\n{BOLD}Review your setup:{RESET}\n")
+    click.echo(f"  Directory    {CYAN}{target_name}/{RESET}")
+    click.echo(f"  Company      {ctx['company']}")
+    click.echo(f"  Role         {ctx['role']}")
+    click.echo(f"  Cloud        {ctx['cloud']}  ·  {ctx['deploy']}")
+    click.echo(f"  Observability {ctx['observability']}")
+    click.echo(f"  Team size    {ctx['team_size']} SREs")
+    click.echo(f"  Incident channel  {ctx['slack_channel']}")
+    click.echo()
+    return click.confirm(f"  {CYAN}Looks good? Create the agent{RESET}", default=True)
 
 
 def make_dir_name(company: str) -> str:
@@ -82,27 +162,24 @@ def make_dir_name(company: str) -> str:
 
 
 def download_template(target: Path) -> None:
-    click.echo(f"\n  Downloading latest skills from GitHub...")
+    click.echo(f"\n  {DIM}Downloading latest skills from GitHub...{RESET}", nl=False)
     try:
         resp = requests.get(REPO_ZIP, timeout=30)
         resp.raise_for_status()
     except requests.RequestException as e:
-        click.echo(f"\n  Could not reach GitHub: {e}", err=True)
+        click.echo(f"\n\n  {YELLOW}Could not reach GitHub: {e}{RESET}", err=True)
         click.echo("  Check your internet connection and try again.", err=True)
         sys.exit(1)
 
     with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
         for member in zf.namelist():
-            # Skip root-level files we don't want in the scaffolded output
             rel = member.removeprefix(REPO_PREFIX)
             if not rel or rel.startswith(".git"):
                 continue
-            # Exclude package source, pyproject, scripts (user gets CLI instead)
             if rel.startswith(("sre_agent/", "scripts/", "incidents/")):
                 continue
             if rel in ("pyproject.toml", "ROADMAP.md"):
                 continue
-
             dest = target / rel
             if member.endswith("/"):
                 dest.mkdir(parents=True, exist_ok=True)
@@ -110,10 +187,12 @@ def download_template(target: Path) -> None:
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 dest.write_bytes(zf.read(member))
 
+    click.echo(f" {GREEN}done{RESET}")
+
 
 def write_context(target: Path, ctx: dict) -> None:
     context_file = target / "context" / "CONTEXT.md"
-    content = f"""# Company Context
+    context_file.write_text(f"""# Company Context
 
 role: {ctx['role']}
 cloud_provider: {ctx['cloud']}
@@ -122,38 +201,44 @@ deployment_tool: {ctx['deploy']}
 team_size: {ctx['team_size']}
 situation: learning
 
-# Fill in the files below to complete your setup:
-# - context/company/tech-stack.md    → your actual tools and services
-# - context/company/oncall-schedule.md → your team and rotation
+# Next: fill in these files to complete your setup
+# - context/company/tech-stack.md      → your actual services and tools
+# - context/company/oncall-schedule.md → your team members and rotation
 # - context/company/incident-severity.md → your P-level definitions
-"""
-    context_file.write_text(content)
+""")
 
     oncall_file = target / "context" / "company" / "oncall-schedule.md"
-    oncall_text = oncall_file.read_text()
-    oncall_text = oncall_text.replace(
-        'incident_slack_channel: "#incidents"',
-        f'incident_slack_channel: "{ctx["slack_channel"]}"',
-    )
-    oncall_file.write_text(oncall_text)
+    if oncall_file.exists():
+        text = oncall_file.read_text().replace(
+            'incident_slack_channel: "#incidents"',
+            f'incident_slack_channel: "{ctx["slack_channel"]}"',
+        )
+        oncall_file.write_text(text)
 
 
 def print_success(target: Path, ctx: dict) -> None:
     click.echo(f"""
-{ANSI_BOLD}{ANSI_GREEN}✓ Done! Your SRE agent is ready.{ANSI_RESET}
+{GREEN}{BOLD}✓ Your SRE agent is ready.{RESET}
 
-  {ANSI_BOLD}Directory:{ANSI_RESET} {target}
-  {ANSI_BOLD}Company:{ANSI_RESET}   {ctx['company']}
-  {ANSI_BOLD}Stack:{ANSI_RESET}     {ctx['cloud']} · {ctx['observability']} · {ctx['deploy']}
+{BOLD}What was set up:{RESET}
+  19 SRE skills  ·  Knowledge base  ·  Context templates
 
-{ANSI_BOLD}Next steps:{ANSI_RESET}
+{BOLD}Next steps:{RESET}
 
-  {ANSI_CYAN}1.{ANSI_RESET} cd {target.name}
-  {ANSI_CYAN}2.{ANSI_RESET} Fill in context/company/tech-stack.md with your actual services
-  {ANSI_CYAN}3.{ANSI_RESET} Run: claude
+  {CYAN}1.{RESET}  cd {target.name}
 
-{ANSI_DIM}Your knowledge base starts empty — it grows from your own incidents.
-After each incident, run the knowledge-capture skill to save what was learned.{ANSI_RESET}
+  {CYAN}2.{RESET}  Fill in your company context:
+      context/company/tech-stack.md        ← your services and tools
+      context/company/oncall-schedule.md   ← your team and rotation
+
+  {CYAN}3.{RESET}  Start the agent:
+      claude
+
+  {CYAN}4.{RESET}  After your first incident, run knowledge-capture
+      to start building institutional memory.
+
+{DIM}Your knowledge base starts empty — it grows from your own incidents.
+The more incidents it sees, the smarter it gets.{RESET}
 """)
 
 
@@ -162,24 +247,27 @@ After each incident, run the knowledge-capture skill to save what was learned.{A
 def init(directory: str | None) -> None:
     """Set up a new SRE agent for your company.
 
-    Creates a directory with all skills, context templates, and knowledge base
-    pre-configured for your stack. Run 'claude' inside it to get started.
+    Creates a directory with all 19 skills, context templates, and an
+    empty knowledge base pre-configured for your stack.
 
     \b
     Examples:
       sre-agent init
       sre-agent init my-company-sre
     """
-    print_banner()
+    header()
     ctx = gather_context()
 
     target_name = directory or make_dir_name(ctx["company"])
     target = Path.cwd() / target_name
 
+    if not confirm_summary(ctx, target_name):
+        click.echo(f"\n  {DIM}Aborted. Run sre-agent init again when ready.{RESET}\n")
+        sys.exit(0)
+
     if target.exists():
-        click.echo(f"\n  {ANSI_YELLOW}Directory '{target_name}' already exists.{ANSI_RESET}")
+        click.echo(f"\n  {YELLOW}'{target_name}' already exists.{RESET}")
         if not click.confirm("  Overwrite?", default=False):
-            click.echo("  Aborted.")
             sys.exit(0)
 
     download_template(target)

@@ -1,17 +1,10 @@
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
-
 import click
-
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
-from incident_init import (  # noqa: E402
-    generate_channel_name,
-    create_timeline,
-    find_related_patterns,
-    print_summary,
-    INCIDENTS_DIR,
-    VALID_SEVERITIES,
+from sre_agent.core.incident import (
+    generate_channel_name, create_timeline,
+    find_related_patterns, print_summary,
+    INCIDENTS_DIR, VALID_SEVERITIES,
 )
 
 

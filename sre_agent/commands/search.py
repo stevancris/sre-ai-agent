@@ -1,11 +1,6 @@
 import sys
-from pathlib import Path
-
 import click
-
-# Reuse logic from scripts/knowledge_search.py
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
-from knowledge_search import load_patterns, score, print_result, PATTERNS_DIR  # noqa: E402
+from sre_agent.core.search import load_patterns, score, print_result, PATTERNS_DIR
 
 
 @click.command()
@@ -23,7 +18,7 @@ def search(query: str, service: str | None, top: int) -> None:
     """
     if not PATTERNS_DIR.exists():
         click.echo(
-            "No knowledge base found. Run this command from inside your sre-agent directory.",
+            "No knowledge base found. Run this from inside your sre-agent directory.",
             err=True,
         )
         sys.exit(1)
