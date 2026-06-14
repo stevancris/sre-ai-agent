@@ -259,14 +259,19 @@ def print_success(target: Path, ctx: dict) -> None:
       context/company/tech-stack.md        ← your services and tools
       context/company/oncall-schedule.md   ← your team and rotation
 
-  {CYAN}3.{RESET}  Start the agent:
+  {CYAN}3.{RESET}  Push to a private repo so your whole team stays in sync:
+      git init && git add . && git commit -m "init sre agent"
+      git remote add origin <your-private-repo-url>
+      git push -u origin main
+
+  {CYAN}4.{RESET}  Start the agent:
       claude
 
-  {CYAN}4.{RESET}  After your first incident, run knowledge-capture
+  {CYAN}5.{RESET}  After your first incident, run knowledge-capture
       to start building institutional memory.
 
-{DIM}Your knowledge base starts empty — it grows from your own incidents.
-The more incidents it sees, the smarter it gets.{RESET}
+{DIM}Every resolved incident that goes into knowledge-base/patterns/
+makes the next one faster — for everyone on the team.{RESET}
 """)
 
 
