@@ -1,62 +1,104 @@
+<div align="center">
+
 # SRE AI Agent
 
-> Your company's institutional memory for SRE — grows smarter with every incident.
+**Your company's institutional memory for SRE.**  
+Grows smarter with every incident. Available at 3am. Never leaves.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![Skills](https://img.shields.io/badge/Skills-20-green)](#skills)
+[![npx](https://img.shields.io/badge/npx-skills%20add-black)](https://agentskills.io)
+
+</div>
 
 ---
 
-## The Problem
+## The problem no one talks about
 
-Every SRE team has the same silent crisis. Your most experienced engineer carries years of operational knowledge in their head: which alerts are false positives at 2am, which service misbehaves after a certain deploy, what the fix is and which dead ends to avoid. That knowledge lives nowhere else.
+Your best SRE carries years of knowledge in their head.
 
-Then they leave. Or go on vacation. Or aren't the one paged at 3am.
+Which alerts are false positives at 2am. Which service breaks after a specific deploy pattern. What the actual fix is — and which dead ends to avoid. That knowledge exists nowhere else.
 
-The junior SRE who picks up the pager starts from zero — not because they're less capable, but because the knowledge wasn't theirs to keep.
+Then they leave. Or go on vacation. Or aren't the one who gets paged.
+
+The junior SRE who picks up the pager **starts from zero**. They re-learn what the senior already knew. They try the same dead ends. MTTR is 4× longer — not because they're less capable, but because the knowledge wasn't theirs to keep.
 
 ---
 
-## How It Works
+## What changes with SRE AI Agent
+
+```
+Without it                          With it
+──────────────────────────────────  ──────────────────────────────────
+Alert fires at 3am                  Alert fires at 3am
+  ↓                                   ↓
+Junior SRE starts from zero         Agent searches knowledge base
+  ↓                                   ↓
+Tries restarting pods               "Seen this 3 times. Don't restart pods.
+  ↓                                    Go straight to connection pool.
+Doesn't help                           ~12 min to resolve."
+  ↓                                   ↓
+Tries scaling replicas              Junior SRE follows the path
+  ↓                                   ↓
+Makes it worse                      Resolved in 12 min
+  ↓
+47 min later, finally resolved
+
+First time: 47 min                  First time: guided
+Second time: 40 min                 Second time: 12 min
+Third time: still 35 min            Third time: any SRE, same result
+```
+
+**The flywheel:** every resolved incident gets captured. Next time it fires — any SRE on your team resolves it faster. Knowledge compounds. MTTR shrinks. The team stops depending on any one person.
+
+---
+
+## How it works
 
 ```
 Alert fires
     │
     ▼
-Agent searches knowledge base ──► "Seen this before — here's what worked,
-    │                               here's what not to try, ~12 min to resolve"
-    │ (first time?)
+Agent searches knowledge base ──► known pattern found?
+    │                               → fastest path, dead ends to skip, ETA
+    │ first time? no match
     ▼
 Agent guides troubleshooting
+    · severity classification
+    · step-by-step remediation
+    · stakeholder communication drafts
     │
     ▼
-Issue resolved
+Resolved
     │
     ▼
 knowledge-capture runs (mandatory closing step)
-    · Runbook updated: what worked, what failed, dead ends
-    · Pattern saved: symptom signature, fastest diagnostic path
+    · what worked, what didn't, dead ends
+    · pattern saved → searchable next time
+    · early warning gaps identified
     │
     ▼
-Next occurrence: any SRE resolves it faster
+Next occurrence: any SRE, faster resolution
 ```
-
-**The flywheel:** every incident makes the agent more useful for the next one. Knowledge compounds. MTTR shrinks. The team stops being dependent on any one person.
 
 ---
 
 ## Quick Start
 
-### Option A — CLI (recommended)
+### Option A — CLI
 
 ```bash
 pip install git+https://github.com/stevancris/sre-ai-agent.git
 sre-agent init
 ```
 
-Setup wizard asks about your role, cloud provider, observability stack, and team — then scaffolds a pre-configured agent directory in under 2 minutes.
+5-step wizard. Asks your role, cloud provider, observability stack, team size, Slack channels. Done in under 2 minutes.
 
 ```
 sre-agent init          Set up a new SRE agent for your company
-sre-agent search        Search the knowledge base by symptom
-sre-agent incident      Scaffold a new incident with timeline
+sre-agent search        Search the knowledge base by symptom keyword
+sre-agent incident      Scaffold a new incident with timeline and checklist
 sre-agent import-rca    Convert existing RCA documents into knowledge-base patterns
 sre-agent validate      Validate all SKILL.md files
 ```
@@ -67,19 +109,19 @@ sre-agent validate      Validate all SKILL.md files
 npx skills add stevancris/sre-ai-agent
 ```
 
-Installs all 20 skills directly into your AI client (Claude, Cursor, Copilot, and more).
+Installs all 20 skills into your AI client — Claude, Cursor, Copilot, and [71 more](https://agentskills.io).
 
-### Manual setup
+### Option C — Manual
 
-1. Clone or fork this repo
-2. Edit [`context/CONTEXT.md`](context/CONTEXT.md) with your role, cloud provider, and stack
-3. Run `claude` in the directory — the agent reads `CLAUDE.md` automatically
+1. Clone this repo
+2. Edit [`context/CONTEXT.md`](context/CONTEXT.md) with your role, stack, and team
+3. Run `claude` — the agent reads `CLAUDE.md` automatically
 
 ---
 
-## Already Have RCAs?
+## Already have old RCAs sitting in Confluence?
 
-If your team has existing incident reports or postmortems, import them directly:
+Don't wait for new incidents to build your knowledge base. Import what you already have:
 
 ```bash
 sre-agent import-rca postmortem-2024-11.md
@@ -87,7 +129,8 @@ sre-agent import-rca pagerduty-export.json
 sre-agent import-rca incidents/*.md
 ```
 
-Accepts any format — our postmortem template, PagerDuty JSON, Atlassian, or plain text. Converts to searchable knowledge-base patterns automatically. Day one, the agent already knows your history.
+Accepts our postmortem format, PagerDuty JSON, Atlassian exports, or plain text.  
+Day one, the agent already knows your history.
 
 ---
 
@@ -98,14 +141,14 @@ Accepts any format — our postmortem template, PagerDuty JSON, Atlassian, or pl
 | Skill | What it does |
 |---|---|
 | `incident-response` | End-to-end incident management with knowledge base lookup |
-| `oncall-runbook` | Walk through remediation steps, search known patterns first |
-| `knowledge-capture` | Persist what was learned — mandatory closing step after every incident |
-| `import-rca` | Convert existing RCA bank into knowledge-base patterns |
+| `oncall-runbook` | Walk through remediation, search known patterns first |
+| `knowledge-capture` | Persist what was learned — mandatory after every incident |
+| `import-rca` | Convert existing RCA bank into searchable patterns |
 | `postmortem` | Blameless postmortem with five-whys and action items |
-| `rca-summary` | Shareable RCA digest for Slack, email, or management |
+| `rca-summary` | Shareable digest for Slack, email, or management |
 | `root-cause-analysis` | Five-whys, fishbone, timeline correlation |
 | `deployment-safety` | Risk scoring, canary strategy, rollback decision |
-| `slo-monitoring` | SLO setup, error budget calculation, burn rate alerts |
+| `slo-monitoring` | SLO setup, error budget, burn rate alerts |
 | `observability` | Four golden signals, structured logging, alerting design |
 | `oncall-handoff` | Structured shift handoff — routine and active incident formats |
 | `production-readiness-review` | 8-section checklist before any service goes live |
@@ -115,53 +158,50 @@ Accepts any format — our postmortem template, PagerDuty JSON, Atlassian, or pl
 | `cost-optimization` | Cloud cost reduction ranked by impact and safety |
 | `security-posture` | IAM review, secrets audit, vulnerability triage, compliance |
 | `runbook-generator` | Generate complete runbooks from scratch |
-| `rfc` | Draft and iterate on technical proposals and architecture decisions |
+| `rfc` | Draft and iterate on technical proposals |
 | `toil-tracking` | Measure SRE toil load, build automation business cases |
 
 ---
 
-## Team Setup
-
-The real power comes when the entire team shares one knowledge base.
-
-1. One person runs `sre-agent init` → creates a configured directory
-2. Push that directory to a **new private repo** in your company's Git org — everyone else clones it
-3. After every incident, `knowledge-capture` generates a pattern file — open a PR
-4. One teammate reviews, merges — everyone pulls, knowledge is synced
-
-```
-Incident resolved
-  → sre-agent knowledge-capture
-  → new pattern file in knowledge-base/patterns/
-  → PR → 1 approval → merge → git pull
-  → next SRE resolves the same issue in 12 min instead of 47
-```
-
----
-
-## Personas
-
-The agent adapts to your role:
+## The agent adapts to your role
 
 | Role | Behavior |
 |---|---|
 | `junior-sre` | Step-by-step with explanations, escalation reminders, safety nets |
-| `senior-sre` | Concise, trade-offs surfaced, technical depth |
+| `senior-sre` | Concise, trade-offs surfaced, no hand-holding |
 | `sre-manager` | Executive summaries, business risk framing, stakeholder comms |
 
 ---
 
-## Inspired By
+## Team setup
+
+The real power comes when the whole team shares one knowledge base. Every incident one SRE resolves makes the next one faster for everyone.
+
+1. One person runs `sre-agent init` → get a configured directory
+2. Push to a **new private repo** in your company's Git org
+3. Everyone clones it — context is shared from day one
+4. After every incident: `knowledge-capture` generates a pattern file → open a PR → 1 approval → merge → `git pull`
+
+```
+Month 1   →  3–5 patterns   →  known issues resolved 2–3× faster
+Month 3   →  10–15 patterns →  junior SREs handle P2s independently
+Month 6   →  25+ patterns   →  MTTR down, alert fatigue reduced
+Year 1    →  deep history   →  new hires productive in days, not months
+```
+
+---
+
+## Inspired by
 
 - [Google SRE Book](https://sre.google/sre-book/table-of-contents/) — principles behind the skills
 - [Agent Skills specification](https://agentskills.io/specification) — SKILL.md structure
-- [Google SRE AI blog post](https://cloud.google.com/blog/products/devops-sre/how-google-sre-is-using-agentic-ai-to-improve-operations) — validation that this direction is right
+- [Google SRE AI blog post](https://cloud.google.com/blog/products/devops-sre/how-google-sre-is-using-agentic-ai-to-improve-operations) — validation that this direction matters
 
 ---
 
 ## Contributing
 
-Contributions welcome — especially new skills, stack-specific examples, and anonymized knowledge-base patterns from real incidents.
+Contributions welcome — new skills, stack-specific examples, anonymized knowledge-base patterns from real incidents.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
