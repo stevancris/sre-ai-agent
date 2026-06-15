@@ -238,9 +238,10 @@ situation: learning
 
     oncall_file = target / "context" / "company" / "oncall-schedule.md"
     if oncall_file.exists():
-        text = oncall_file.read_text().replace(
-            'incident_slack_channel: "#incidents"',
+        text = re.sub(
+            r'incident_slack_channel:\s*"[^"]*"',
             f'incident_slack_channel: "{ctx["slack_channel"]}"',
+            oncall_file.read_text(),
         )
         oncall_file.write_text(text)
 
