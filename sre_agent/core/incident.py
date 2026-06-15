@@ -3,9 +3,9 @@
 Scaffold a new incident — creates a timestamped folder with timeline and checklist.
 
 Usage:
-  python scripts/incident_init.py <service> <severity>
-  python scripts/incident_init.py payment-api P1
-  python scripts/incident_init.py auth-service P0 --symptom "all logins failing"
+  sre-agent incident <service> <severity>
+  sre-agent incident payment-api P1
+  sre-agent incident auth-service P0 --symptom "all logins failing"
 """
 
 import argparse
@@ -223,9 +223,9 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/incident_init.py payment-api P1
-  python scripts/incident_init.py auth-service P0 --symptom "all logins failing"
-  python scripts/incident_init.py order-service P2 --symptom "checkout slow for EU users"
+  sre-agent incident payment-api P1
+  sre-agent incident auth-service P0 --symptom "all logins failing"
+  sre-agent incident order-service P2 --symptom "checkout slow for EU users"
         """,
     )
     parser.add_argument("service", help="Affected service name (e.g. payment-api)")

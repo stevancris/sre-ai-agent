@@ -3,9 +3,9 @@
 Search the SRE knowledge base for incident patterns.
 
 Usage:
-  python scripts/knowledge_search.py <query>
-  python scripts/knowledge_search.py <query> --service payment-api
-  python scripts/knowledge_search.py <query> --top 5
+  sre-agent search <query>
+  sre-agent search <query> --service payment-api
+  sre-agent search <query> --top 5
 """
 
 import argparse
@@ -157,9 +157,9 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/knowledge_search.py "503 errors"
-  python scripts/knowledge_search.py "connection pool" --service payment-api
-  python scripts/knowledge_search.py "memory leak" --top 3
+  sre-agent search "503 errors"
+  sre-agent search "connection pool" --service payment-api
+  sre-agent search "memory leak" --top 3
         """,
     )
     parser.add_argument("query", help="Keywords to search for (symptoms, service name, error message)")

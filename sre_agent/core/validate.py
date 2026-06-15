@@ -3,9 +3,8 @@
 Validate all SKILL.md files have correct and complete frontmatter.
 
 Usage:
-  python scripts/validate_skills.py
-  python scripts/validate_skills.py --strict
-  python scripts/validate_skills.py --fix-dry-run
+  sre-agent validate
+  sre-agent validate --strict
 
 Exit codes:
   0 — all skills valid
@@ -148,8 +147,8 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/validate_skills.py           # validate all skills
-  python scripts/validate_skills.py --strict  # treat warnings as errors
+  sre-agent validate           # validate all skills
+  sre-agent validate --strict  # treat warnings as errors
         """,
     )
     parser.add_argument(
